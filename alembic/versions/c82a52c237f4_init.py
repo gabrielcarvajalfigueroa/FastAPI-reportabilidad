@@ -18,12 +18,19 @@ depends_on = None
 
 def upgrade() -> None:
     op.create_table(
-        'jobs',
-        sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('title', sa.String, nullable=False),
-        sa.Column('description', sa.String, nullable=False)
+        'pits',
+        sa.Column('id_pit', sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column('name', sa.String(), nullable=False)
+    )
+
+    op.create_table(
+        'phases',
+        sa.Column('id_phase', sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column('name', sa.String(), nullable=False),
+        sa.Column('id_pit', sa.Integer, sa.ForeignKey('pits.id_pit'))
     )
 
 
 def downgrade() -> None:
-    op.drop_table('jobs')
+    op.drop_table('phases')
+    op.drop_table('pits')
