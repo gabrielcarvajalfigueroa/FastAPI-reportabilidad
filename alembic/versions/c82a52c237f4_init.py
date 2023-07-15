@@ -29,8 +29,23 @@ def upgrade() -> None:
         sa.Column('name', sa.String(), nullable=False),
         sa.Column('id_pit', sa.Integer, sa.ForeignKey('pits.id_pit'))
     )
+    # Se necesita agregar un constraint para que pueda ser llamada como FK en daily_report
+    op.create_unique_constraint("uq_phases_name", "phases", ["name"])
+
+    op.create_table(
+        'daily_report',
+        sa.Column('daily_report', sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column('date', sa.Date(), nullable=False),
+        sa.Column('phase', sa.String(), sa.ForeignKey('phases.name')),
+        sa.Column('real', sa.Integer, nullable=False),
+        sa.Column('ISO_weekly', sa.Integer, nullable=False),
+        sa.Column('movil_weekly', sa.Integer, nullable=False),
+        sa.Column('month_real', sa.Integer, nullable=False),
+        sa.Column('annual_real', sa.Integer, nullable=False)
+    )
 
 
 def downgrade() -> None:
     op.drop_table('phases')
     op.drop_table('pits')
+    op.drop_table('daily_report')
