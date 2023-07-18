@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, ForeignKey, Date
+from sqlalchemy import Integer, String, ForeignKey, Date, Boolean
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.orm import relationship
 from database import Base
@@ -20,7 +20,7 @@ class Phase(Base):
     pit = relationship('Pit')  # Relación con la clase Pit
 
 class Daily_report(Base):
-    __tablename__ = 'daily_report'
+    __tablename__ = 'daily_reports'
 
     daily_report = Column(Integer, primary_key=True)
     date = Column(Date, nullable=False)
@@ -31,3 +31,19 @@ class Daily_report(Base):
     month_real = Column(Integer, nullable=False)
     annual_real = Column(Integer, nullable=False)
     phase_relation = relationship('Phase')
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id_user = Column(Integer, primary_key=True)
+    is_admin = Column(Boolean, nullable=False)
+    email = Column(String, nullable=False)
+    password = Column(String, nullable=False)
+    name = Column(String, nullable=False)    
+
+class User_request(Base):
+    __tablename__ = 'users_requests'
+
+    id_request = Column(Integer, primary_key=True)
+    email = Column(String, nullable=False)
+    message = Column(String, nullable=False)    

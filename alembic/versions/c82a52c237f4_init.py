@@ -33,7 +33,7 @@ def upgrade() -> None:
     op.create_unique_constraint("uq_phases_name", "phases", ["name"])
 
     op.create_table(
-        'daily_report',
+        'daily_reports',
         sa.Column('daily_report', sa.Integer, primary_key=True, autoincrement=True),
         sa.Column('date', sa.Date(), nullable=False),
         sa.Column('phase', sa.String(), sa.ForeignKey('phases.name')),
@@ -44,8 +44,25 @@ def upgrade() -> None:
         sa.Column('annual_real', sa.Integer, nullable=False)
     )
 
+    op.create_table(
+        'users',
+        sa.Column('id_user', sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column('is_admin', sa.Boolean, nullable=False),
+        sa.Column('email', sa.String(), nullable=False),
+        sa.Column('password', sa.String(), nullable=False),
+        sa.Column('name', sa.String(), nullable=False)
+    )
+
+    op.create_table(
+        'users_requests',
+        sa.Column('id_request', sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column('email', sa.String(), nullable=False),
+        sa.Column('message', sa.String(), nullable=False)        
+    )
 
 def downgrade() -> None:
     op.drop_table('phases')
     op.drop_table('pits')
-    op.drop_table('daily_report')
+    op.drop_table('daily_reports')
+    op.drop_table('users')
+    op.drop_table('users_request')
