@@ -56,7 +56,10 @@ def upgrade() -> None:
     op.create_table(
         'users_requests',
         sa.Column('id_request', sa.Integer, primary_key=True, autoincrement=True),
+        sa.Column('name', sa.String(), nullable=False),
         sa.Column('email', sa.String(), nullable=False),
+        sa.Column('date', sa.Date(), nullable=False),
+        sa.Column('status', sa.String(), nullable=False),
         sa.Column('message', sa.String(), nullable=False)        
     )
 

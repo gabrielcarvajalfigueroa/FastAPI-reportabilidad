@@ -45,5 +45,8 @@ class User_request(Base):
     __tablename__ = 'users_requests'
 
     id_request = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
     email = Column(String, nullable=False)
+    date = Column(Date, nullable=False)
+    status = Column(String, nullable=False)
     message = Column(String, nullable=False)    

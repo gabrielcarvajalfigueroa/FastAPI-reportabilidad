@@ -1,4 +1,6 @@
+from datetime import date
 from pydantic import BaseModel
+from fastapi import File, UploadFile
 
 class UserCreate(BaseModel):
     username: str
@@ -7,5 +9,16 @@ class UserCreate(BaseModel):
     is_admin: bool
 
 class UserRequestCreate(BaseModel):
+    name: str
     email: str
+    date: date
+    status: str
     message: str
+
+class UserRequestUpdate(BaseModel):
+    id_request: int
+    status: str
+
+
+class FileSchema(BaseModel):
+    archivoRecibido: UploadFile 

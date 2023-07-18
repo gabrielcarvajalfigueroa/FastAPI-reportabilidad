@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, extract
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
@@ -9,7 +9,7 @@ from sqlalchemy import func, cast, Numeric
 # Carga las variables de entorno del archivo .env
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:123456@localhost:5432/next-test"
+SQLALCHEMY_DATABASE_URL = "postgresql://zgnpmelf:wMJmL2wJDCRu3xJfu3Wxpgqw1ExtOtpo@silly.db.elephantsql.com/zgnpmelf"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -80,8 +80,6 @@ def get_daily_reports_objects():
     db.close()
     return daily_reports_data
 
-from sqlalchemy import func, cast, Numeric
-
 def get_total_extraction_objects():
     from models import Pit, Phase, Daily_report   
     db = SessionLocal()
@@ -103,6 +101,51 @@ def get_total_extraction_objects():
         total_extraction_data.append(extraction_data)
 
     db.close()
+    return total_extraction_data
+
+def get_total_extraction_objects_filtered_by_year(year: int):
+    from models import Pit, Phase, Daily_report
+    db = SessionLocal()
+    query = db.query(
+        Pit.name,
+        Daily_report.phase,
+        cast(func.round(func.sum(Daily_report.real) / 1000, 0), Numeric(10, 0)).label("total_real")
+    ).join(Phase, Phase.id_pit == Pit.id_pit).join(Daily_report, Daily_report.phase == Phase.name).filter(extract('year', Daily_report.date) == year).group_by(Daily_report.phase, Pit.name).order_by(Pit.name)
+
+    results = query.all()
+
+    total_extraction_data = []
+    for result in results:
+        extraction_data = {
+            "name": result.name,
+            "phase": result.phase,
+            "total_real": result.total_real,
+        }
+        total_extraction_data.append(extraction_data)
+
+    return total_extraction_data
+
+
+def get_total_extraction_objects_filtered_by_month(year: int, month: int):
+    from models import Pit, Phase, Daily_report
+    db = SessionLocal()
+    query = db.query(
+        Pit.name,
+        Daily_report.phase,
+        cast(func.round(func.sum(Daily_report.real) / 1000, 0), Numeric(10, 0)).label("total_real")
+    ).join(Phase, Phase.id_pit == Pit.id_pit).join(Daily_report, Daily_report.phase == Phase.name).filter(extract('year', Daily_report.date) == year, extract('month', Daily_report.date) == month).group_by(Daily_report.phase, Pit.name).order_by(Pit.name)
+
+    results = query.all()
+
+    total_extraction_data = []
+    for result in results:
+        extraction_data = {
+            "name": result.name,
+            "phase": result.phase,
+            "total_real": result.total_real,
+        }
+        total_extraction_data.append(extraction_data)
+
     return total_extraction_data
 
 
@@ -135,7 +178,10 @@ def get_requests_objects():
     for user_request in users_requests:
         user_request_data = {
             "id_request": user_request.id_request,
+            "name": user_request.name,
             "email": user_request.email,
+            "date": user_request.date,
+            "status": user_request.status,
             "message": user_request.message,                        
         }
         users_request_data.append(user_request_data)

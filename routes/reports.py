@@ -1,8 +1,16 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
 from datetime import date
 from sqlalchemy.orm import Session
-from database import get_db, get_pits, get_phases_objects, get_daily_reports_objects, get_total_extraction_objects
-
+from database import (
+    get_db,
+    get_pits,
+    get_phases_objects,
+    get_daily_reports_objects,
+    get_total_extraction_objects,
+    get_total_extraction_objects_filtered_by_month,
+    get_total_extraction_objects_filtered_by_year,
+)
+from typing import Optional
 # APIRouter se encarga de administrar las rutas para poder ser llamadas desde el main
 reports = APIRouter()
 
@@ -45,9 +53,15 @@ def get_daily_reports_in_db(
 
 # Retorna la extraccion total de los rajos y por cada fase
 @reports.get("/api/reports/totalExtraction")
-def get_total_extraction_in_db(db: Session = Depends(get_db)):
+def get_total_extraction_in_db(year: int, month: Optional[int] = None, db: Session = Depends(get_db)):
     """
     Retorna las extraciones totales de los rajos y por cada fase
     """
-    total_extraction_in_db = get_total_extraction_objects()
+    if month is not None:
+        # Realiza la consulta a la base de datos con el filtrado por mes y año
+        total_extraction_in_db = get_total_extraction_objects_filtered_by_month(year, month)
+    else:
+        # Realiza la consulta a la base de datos con el filtrado solo por año
+        total_extraction_in_db = get_total_extraction_objects_filtered_by_year(year)
+
     return total_extraction_in_db
