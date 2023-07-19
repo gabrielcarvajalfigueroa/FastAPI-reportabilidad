@@ -9,7 +9,7 @@ from sqlalchemy import func, cast, Numeric
 # Carga las variables de entorno del archivo .env
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = "postgresql://zgnpmelf:wMJmL2wJDCRu3xJfu3Wxpgqw1ExtOtpo@silly.db.elephantsql.com/zgnpmelf"
+SQLALCHEMY_DATABASE_URL = os.getenv('PRODUCTION_DATABASE_URL')
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
